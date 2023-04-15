@@ -1,2 +1,2 @@
 # cubery
-a simple web framework..
+a simple web framework
