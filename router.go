@@ -17,15 +17,13 @@ func newRouter() *router {
 	}
 }
 
-// Only one * is allowed
-func parsePattern(pattern string) []string {
-	vs := strings.Split(pattern, "/")
-
+func parseRoute(route string) []string {
+	ps := strings.Split(route, "/")
 	parts := make([]string, 0)
-	for _, item := range vs {
-		if item != "" {
-			parts = append(parts, item)
-			if item[0] == '*' {
+	for _, v := range ps {
+		if v != "" {
+			parts = append(parts, v)
+			if v[0] == '*' {
 				break
 			}
 		}
@@ -33,31 +31,26 @@ func parsePattern(pattern string) []string {
 	return parts
 }
 
-func (r *router) addRoute(method string, pattern string, handler HandlerFunc) {
-	parts := parsePattern(pattern)
-
-	key := method + "-" + pattern
+func (r *router) addRoute(method string, route string, handler HandlerFunc) {
+	parts := parseRoute(route)
 	_, ok := r.roots[method]
 	if !ok {
 		r.roots[method] = &node{}
 	}
-	r.roots[method].insert(pattern, parts, 0)
-	r.handlers[key] = handler
+	r.roots[method].insert(route, parts, 0)
+	r.handlers[method+"-"+route] = handler
 }
 
 func (r *router) getRoute(method string, path string) (*node, map[string]string) {
-	searchParts := parsePattern(path)
+	searchParts := parseRoute(path)
 	params := make(map[string]string)
 	root, ok := r.roots[method]
-
 	if !ok {
 		return nil, nil
 	}
-
 	n := root.search(searchParts, 0)
-
 	if n != nil {
-		parts := parsePattern(n.pattern)
+		parts := parseRoute(n.route)
 		for index, part := range parts {
 			if part[0] == ':' {
 				params[part[1:]] = searchParts[index]
@@ -69,7 +62,6 @@ func (r *router) getRoute(method string, path string) (*node, map[string]string)
 		}
 		return n, params
 	}
-
 	return nil, nil
 }
 
@@ -85,9 +77,8 @@ func (r *router) getRoutes(method string) []*node {
 
 func (r *router) handle(c *Context) {
 	n, params := r.getRoute(c.Method, c.Path)
-
 	if n != nil {
-		key := c.Method + "-" + n.pattern
+		key := c.Method + "-" + n.route
 		c.Params = params
 		c.handlers = append(c.handlers, r.handlers[key])
 	} else {

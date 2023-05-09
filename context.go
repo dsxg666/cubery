@@ -90,7 +90,6 @@ func (c *Context) Data(code int, data []byte) {
 	_, _ = c.Writer.Write(data)
 }
 
-// HTML template render
 func (c *Context) HTML(code int, name string, data interface{}) {
 	c.SetHeader("Content-Type", "text/html")
 	c.Status(code)

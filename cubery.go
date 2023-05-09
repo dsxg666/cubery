@@ -17,7 +17,6 @@ type Engine struct {
 	funcMap       template.FuncMap   // for html render
 }
 
-// New is the constructor of gee.Engine
 func New() *Engine {
 	engine := &Engine{router: newRouter()}
 	engine.RouterGroup = &RouterGroup{engine: engine}
@@ -25,7 +24,7 @@ func New() *Engine {
 	return engine
 }
 
-// Default use Logger() & Recovery middlewares
+// Default use Logger() & Recovery() middlewares
 func Default() *Engine {
 	engine := New()
 	engine.Use(Logger(), Recovery())
@@ -44,6 +43,10 @@ func (e *Engine) LoadHTMLGlob(pattern string) {
 // Run defines the method to start a http server
 func (e *Engine) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, e)
+}
+
+func (e *Engine) RunTLS(addr, certFile, keyFile string) (err error) {
+	return http.ListenAndServeTLS(addr, certFile, keyFile, e)
 }
 
 func (e *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
