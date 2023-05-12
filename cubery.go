@@ -45,6 +45,7 @@ func (e *Engine) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, e)
 }
 
+// RunTLS defines the method to start a https server
 func (e *Engine) RunTLS(addr, certFile, keyFile string) (err error) {
 	return http.ListenAndServeTLS(addr, certFile, keyFile, e)
 }

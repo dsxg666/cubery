@@ -1,6 +1,7 @@
 package cubery
 
 import (
+	"embed"
 	"log"
 	"net/http"
 	"path"
@@ -58,7 +59,6 @@ func (rg *RouterGroup) createStaticHandler(relativePath string, fs http.FileSyst
 			c.Status(http.StatusNotFound)
 			return
 		}
-
 		fileServer.ServeHTTP(c.Writer, c.Req)
 	}
 }
@@ -69,4 +69,11 @@ func (rg *RouterGroup) Static(relativePath string, root string) {
 	urlPattern := path.Join(relativePath, "/*filepath")
 	// Register GET handlers
 	rg.GET(urlPattern, handler)
+}
+
+func (rg *RouterGroup) StaticFS(relativePath string, assetFS embed.FS) {
+	rg.addRoute("GET", relativePath, func(c *Context) {
+		staticServer := http.FileServer(http.FS(assetFS))
+		staticServer.ServeHTTP(c.Writer, c.Req)
+	})
 }
