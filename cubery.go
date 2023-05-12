@@ -1,6 +1,7 @@
 package cubery
 
 import (
+	"embed"
 	"html/template"
 	"net/http"
 	"strings"
@@ -38,6 +39,10 @@ func (e *Engine) SetFuncMap(funcMap template.FuncMap) {
 
 func (e *Engine) LoadHTMLGlob(pattern string) {
 	e.htmlTemplates = template.Must(template.New("").Funcs(e.funcMap).ParseGlob(pattern))
+}
+
+func (e *Engine) LoadHTMLGlobFS(pattern string, htmlFS embed.FS) {
+	e.htmlTemplates = template.Must(template.New("").ParseFS(htmlFS, pattern))
 }
 
 // Run defines the method to start a http server

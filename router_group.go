@@ -67,7 +67,6 @@ func (rg *RouterGroup) createStaticHandler(relativePath string, fs http.FileSyst
 func (rg *RouterGroup) Static(relativePath string, root string) {
 	handler := rg.createStaticHandler(relativePath, http.Dir(root))
 	urlPattern := path.Join(relativePath, "/*filepath")
-	// Register GET handlers
 	rg.GET(urlPattern, handler)
 }
 
