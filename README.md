@@ -2,7 +2,9 @@
 a simple web framework.
 ## Getting started
 ### Getting Cubery
-`go get github.com/dsxg666/cubery`
+```
+go get github.com/dsxg666/cubery
+```
 ### Running Cubery
 ```go
 package main
