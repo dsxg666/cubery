@@ -16,6 +16,7 @@ type Engine struct {
 	groups        []*RouterGroup     // store all groups
 	htmlTemplates *template.Template // for html render
 	funcMap       template.FuncMap   // for html render
+	noRouterDeal  HandlerFunc
 }
 
 func New() *Engine {
@@ -30,6 +31,10 @@ func Default() *Engine {
 	engine := New()
 	engine.Use(Logger(), Recovery())
 	return engine
+}
+
+func (e *Engine) NoRoute(h HandlerFunc) {
+	e.noRouterDeal = h
 }
 
 // SetFuncMap for custom render function
@@ -65,5 +70,5 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	c := newContext(w, req)
 	c.handlers = middlewares
 	c.engine = e
-	e.router.handle(c)
+	e.router.handle(c, e.noRouterDeal)
 }

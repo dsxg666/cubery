@@ -75,16 +75,20 @@ func (r *router) getRoutes(method string) []*node {
 	return nodes
 }
 
-func (r *router) handle(c *Context) {
+func (r *router) handle(c *Context, h HandlerFunc) {
 	n, params := r.getRoute(c.Method, c.Path)
 	if n != nil {
 		key := c.Method + "-" + n.route
 		c.Params = params
 		c.handlers = append(c.handlers, r.handlers[key])
 	} else {
-		c.handlers = append(c.handlers, func(c *Context) {
-			c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
-		})
+		if h == nil {
+			c.handlers = append(c.handlers, func(c *Context) {
+				c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
+			})
+		} else {
+			c.handlers = append(c.handlers, h)
+		}
 	}
 	c.Next()
 }
