@@ -28,6 +28,9 @@ func main() {
 	app.StaticFS("/static/*filepath", staticFS)
 	// app.LoadHTMLGlob("templates/**/*")
 	app.LoadHTMLGlobFS("templates/**/*", htmlFS)
+	app.NoRoute(func(c *cubery.Context) {
+		// do some 404 deal
+	})
 	app.GET("/", func(c *cubery.Context) {
 		c.HTML(200, "who/dsxg.html", cubery.H{
 			"title": "Hello",
